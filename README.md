@@ -152,7 +152,7 @@ DESCRIBE users;
 
 ## Create the transactions table
 
-
+```
 CREATE TABLE transactions (
   id INT AUTO_INCREMENT PRIMARY KEY,
   payment_amount DECIMAL(10,2) NOT NULL,
@@ -162,8 +162,8 @@ CREATE TABLE transactions (
   swift_code VARCHAR(20) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+```
 
----
 You can confirm the table structure with:
 
 ```

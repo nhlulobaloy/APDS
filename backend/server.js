@@ -38,7 +38,6 @@ app.post('/login', async (req, res) => {
     const isValid = await verifyPassword(password, dbPassword);
     if(isValid) {
         const token = await generateToken(userId)
-        console.log(token) 
         return res.status(200).json({message: "success", token: token})
     } else{
         return res.status(404).json({message: "Password incorrect"})

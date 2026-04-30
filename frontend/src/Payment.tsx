@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./styles/Payment.css";
 
 function Payment() {
@@ -9,14 +10,18 @@ function Payment() {
   const [provider] = useState("SWIFT");
   const [payeeAccountNumber, setPayeeAccountNumber] = useState("");
   const [swiftCode, setSwiftCode] = useState("");
+  const navigate = useNavigate();
 
+  const pageBack = () => {
+    navigate(-1);
+  };
   const handlePayment = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const token = localStorage.getItem("token");
-
+  const token = localStorage.getItem("token");
     if (!token) {
       alert("Please login first.");
+      localStorage.clear();
+       navigate('/login')
       return;
     }
 
@@ -28,7 +33,7 @@ function Payment() {
         payeeAccountNumber,
         swiftCode,
       };
-
+      
       const res = await axios.post("http://localhost:5000/payment", data, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -43,6 +48,7 @@ function Payment() {
       setSwiftCode("");
     } catch (error: any) {
       alert(error?.response?.data?.message || "Payment failed");
+     
     }
   };
 
@@ -105,6 +111,7 @@ function Payment() {
           />
 
           <button type="submit">Pay Now</button>
+          <button onClick={pageBack}>Back</button>
         </form>
       </div>
     </div>

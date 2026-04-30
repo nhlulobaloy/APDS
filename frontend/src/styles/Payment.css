@@ -1,6 +1,6 @@
 .payment-wrapper {
   min-height: 100vh;
-  background: linear-gradient(135deg, #eef4fb, #dce9f7);
+  background: #f8f9fa;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -10,15 +10,17 @@
 .payment-card {
   width: 100%;
   max-width: 480px;
-  background: #ffffff;
-  padding: 35px;
-  border-radius: 18px;
-  box-shadow: 0 12px 30px rgba(0, 40, 85, 0.18);
+  background: white;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .payment-card h1 {
+  font-size: 28px;
+  font-weight: 500;
   text-align: center;
-  color: #003366;
+  color: #111;
   margin-bottom: 8px;
 }
 
@@ -35,45 +37,47 @@
 }
 
 .payment-form label {
-  font-weight: 600;
-  color: #1f2937;
+  font-weight: 500;
+  color: #111;
   margin-bottom: 6px;
   margin-top: 14px;
 }
 
 .payment-form input,
 .payment-form select {
-  padding: 13px;
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
+  width: 100%;
+  padding: 12px 0;
+  margin-bottom: 20px;
+  border: none;
+  border-bottom: 1px solid #ddd;
   font-size: 15px;
-  background: #ffffff;
+  background: transparent;
 }
 
 .payment-form input:focus,
 .payment-form select:focus {
   outline: none;
-  border-color: #003366;
-  box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.12);
+  border-bottom-color: #111;
 }
 
 .payment-form input[readonly] {
-  background: #f1f5f9;
-  color: #475569;
+  background: transparent;
+  color: #666;
 }
 
 .payment-form button {
-  margin-top: 26px;
-  padding: 14px;
-  background: #003366;
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  font-size: 15px;
+  background: #111;
   color: white;
   border: none;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 700;
+  border-radius: 24px;
   cursor: pointer;
 }
 
 .payment-form button:hover {
-  background: #0055aa;
+  opacity: 0.8;
+  background: #111;
 }

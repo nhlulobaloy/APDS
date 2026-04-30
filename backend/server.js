@@ -48,7 +48,35 @@ app.post('/login', async (req, res) => {
 app.get('/dashboard', verifyToken, (req, res) => {
     res.json({message: `Welcome user ${req.userId}`});  
 });
+app.post('/payment', verifyToken, async (req, res) => {
+    const { paymentAmount, currency, provider, payeeAccountNumber, swiftCode } = req.body;
 
+    try {
+        if (!paymentAmount || !currency || !provider || !payeeAccountNumber || !swiftCode) {
+            return res.status(400).json({ message: "All payment fields are required" });
+        }
+
+        const sql = `
+            INSERT INTO transactions 
+            (payment_amount, currency, provider, payee_account_number, swift_code)
+            VALUES (?, ?, ?, ?, ?)
+        `;
+
+        await pool.query(sql, [
+            paymentAmount,
+            currency,
+            provider,
+            payeeAccountNumber,
+            swiftCode
+        ]);
+
+        res.status(200).json({ message: "Payment submitted successfully" });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Payment submission failed" });
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`Server running and it is listing to port ${PORT}`); 

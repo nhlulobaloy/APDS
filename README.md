@@ -162,6 +162,7 @@ CREATE TABLE transactions (
   swift_code VARCHAR(20) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 ---
 You can confirm the table structure with:
 

@@ -25,6 +25,7 @@ app.post('/signup', async (req, res) => {
     }
 })
  
+//login
 app.post('/login', async (req, res) => {
     const { idNumber, password } = req.body;
     const [result] = await pool.query(`SELECT id, password FROM users WHERE id_number = ?`, [idNumber]);
@@ -44,6 +45,7 @@ app.post('/login', async (req, res) => {
     }
 })
 
+//dashboard
 app.get('/dashboard', verifyToken, (req, res) => {
     res.json({message: `Welcome user ${req.userId}`});  
 });
@@ -77,6 +79,7 @@ app.post('/payment', verifyToken, async (req, res) => {
     }
 });
 
+//the app port
 app.listen(PORT, () => {
     console.log(`Server running and it is listing to port ${PORT}`); 
 }); 

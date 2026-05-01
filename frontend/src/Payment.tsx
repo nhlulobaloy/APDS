@@ -15,19 +15,37 @@ function Payment() {
   const pageBack = () => {
     navigate(-1);
   };
+
   const handlePayment = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
     if (!token) {
       alert("Please login first.");
       localStorage.clear();
-       navigate('/login')
+      navigate('/login');
+      return;
+    }
+
+    // Client-side validation with helpful messages
+    const amountNum = parseFloat(paymentAmount);
+    if (isNaN(amountNum) || amountNum <= 10) {
+      alert("Payment amount must be greater than 10");
+      return;
+    }
+
+    if (!/^[0-9]{6,20}$/.test(payeeAccountNumber)) {
+      alert("Account number must be 6-20 digits only");
+      return;
+    }
+
+    if (!/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(swiftCode)) {
+      alert("SWIFT code must be 8 or 11 characters (letters and numbers)");
       return;
     }
 
     try {
       const data = {
-        paymentAmount,
+        paymentAmount: amountNum,
         currency,
         provider,
         payeeAccountNumber,
@@ -48,7 +66,6 @@ function Payment() {
       setSwiftCode("");
     } catch (error: any) {
       alert(error?.response?.data?.message || "Payment failed");
-     
     }
   };
 
@@ -61,10 +78,10 @@ function Payment() {
         </p>
 
         <form onSubmit={handlePayment} className="payment-form">
-          <label>Payment Amount</label>
+          <label>Payment Amount (must be greater than 10)</label>
           <input
             type="number"
-            placeholder="Enter amount"
+            placeholder="Enter amount (min: 11)"
             value={paymentAmount}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
               setPaymentAmount(e.target.value)
@@ -88,32 +105,33 @@ function Payment() {
           <label>Provider</label>
           <input type="text" value={provider} readOnly />
 
-          <label>Payee Account Number</label>
+          <label>Payee Account Number (6-20 digits only)</label>
           <input
             type="text"
-            placeholder="Enter payee account number"
+            placeholder="Enter 6-20 digit account number"
             value={payeeAccountNumber}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setPayeeAccountNumber(e.target.value)
+              setPayeeAccountNumber(e.target.value.replace(/[^0-9]/g, ''))
             }
             required
           />
 
-          <label>SWIFT Code</label>
+          <label>SWIFT Code (8 or 11 characters)</label>
           <input
             type="text"
-            placeholder="Example: FIRNZAJJ"
+            placeholder="Example: FIRNZAJJ or FIRNZAJJXXX"
             value={swiftCode}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
               setSwiftCode(e.target.value.toUpperCase())
             }
             required
           />
-
           <button type="submit">Pay Now</button>
           <button onClick={pageBack}>Back</button>
         </form>
+        
       </div>
+      
     </div>
   );
 }

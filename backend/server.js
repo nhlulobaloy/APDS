@@ -155,7 +155,7 @@ app.post('/payment', verifyToken, async (req, res) => {
         payeeAccountNumber,
         swiftCode
     } = req.body;
-
+  console.log(validateAmount(paymentAmount),validateAccountNumber(payeeAccountNumber), validateSwiftCode(swiftCode))
     // INPUT VALIDATION
     if (
         !validateAmount(paymentAmount) ||

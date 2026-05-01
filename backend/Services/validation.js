@@ -14,10 +14,9 @@ export const validateAccountNumber = (acc) => {
 };
 
 export const validateSwiftCode = (code) => {
-    const regex = /^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/;
+    const regex = /^[A-Z]{4}[A-Z]{2}[A-Z0-9]{3,5}$/;
     return regex.test(code);
 };
-
 export const validateAmount = (amount) => {
-    return typeof amount === "number" && amount > 0;
+    return amount > 0;
 };

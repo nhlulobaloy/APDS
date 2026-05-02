@@ -163,7 +163,16 @@ CREATE TABLE transactions (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
+--After creation of the above tables
+/////NEW COLUMN ADDED TO THE transactions tables
+run this sql code {
 
+ALTER TABLE transactions 
+ADD column user_id INT NOT NULL,
+ADD CONSTRAINT fk_transactions_users
+FOREIGN KEY (user_id) REFERENCES users(id);
+
+}
 You can confirm the table structure with:
 
 ```
@@ -237,7 +246,3 @@ http://localhost:5173
 
 International Payments Portal
 Group Development Project
-<<<<<<< HEAD
-minor changes
-=======
->>>>>>> person3-security

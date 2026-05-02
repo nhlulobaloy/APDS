@@ -10,10 +10,53 @@ function Payment() {
   const [provider] = useState("SWIFT");
   const [payeeAccountNumber, setPayeeAccountNumber] = useState("");
   const [swiftCode, setSwiftCode] = useState("");
+  const [swiftError, setSwiftError] = useState("");
   const navigate = useNavigate();
 
   const pageBack = () => {
     navigate(-1);
+  };
+
+  // Real-time SWIFT validation - MATCHES BACKEND: 9-11 characters
+  const validateSwiftCodeRealTime = (code: string) => {
+    if (!code) {
+      setSwiftError("");
+      return false;
+    }
+    
+    // Check length range (9-11 chars)
+    if (code.length < 9) {
+      setSwiftError(`❌ Too short: ${code.length} chars. SWIFT code needs 9-11 characters total`);
+      return false;
+    }
+    
+    if (code.length > 11) {
+      setSwiftError(`❌ Too long: ${code.length} chars. SWIFT code needs 9-11 characters total`);
+      return false;
+    }
+    
+    // Check first 6 characters are letters
+    const firstSix = code.substring(0, 6);
+    if (!/^[A-Z]{6}$/.test(firstSix)) {
+      setSwiftError("❌ First 6 characters must be letters A-Z only (bank + country code)");
+      return false;
+    }
+    
+    // Check last 3-5 characters are alphanumeric
+    const lastPart = code.substring(6);
+    if (!/^[A-Z0-9]{3,5}$/.test(lastPart)) {
+      setSwiftError(`❌ Last part must be 3-5 letters or numbers (currently ${lastPart.length} chars)`);
+      return false;
+    }
+    
+    setSwiftError("✅ Valid SWIFT code format");
+    return true;
+  };
+
+  const handleSwiftCodeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.toUpperCase();
+    setSwiftCode(value);
+    validateSwiftCodeRealTime(value);
   };
 
   const handlePayment = async (e: FormEvent<HTMLFormElement>) => {
@@ -26,20 +69,41 @@ function Payment() {
       return;
     }
 
-    // Client-side validation with helpful messages
+    // Payment amount validation
     const amountNum = parseFloat(paymentAmount);
     if (isNaN(amountNum) || amountNum <= 10) {
-      alert("Payment amount must be greater than 10");
+      alert("❌ Payment amount must be greater than 10");
       return;
     }
 
+    // Account number validation
     if (!/^[0-9]{6,20}$/.test(payeeAccountNumber)) {
-      alert("Account number must be 6-20 digits only");
+      alert("❌ Account number must be 6-20 digits only (no letters or special characters)");
       return;
     }
 
-    if (!/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(swiftCode)) {
-      alert("SWIFT code must be 8 or 11 characters (letters and numbers)");
+    // SWIFT validation - MATCHING BACKEND EXACTLY
+    if (!swiftCode) {
+      alert("❌ SWIFT code is required");
+      return;
+    }
+    
+    // Check length (9-11 characters)
+    if (swiftCode.length < 9 || swiftCode.length > 11) {
+      alert(`❌ SWIFT code must be 9-11 characters long.\n\nYour code has ${swiftCode.length} characters.\n\nFormat: PPPPCCXXX (4 bank letters + 2 country letters + 3-5 branch letters/numbers)`);
+      return;
+    }
+    
+    // Check first 6 characters are letters
+    if (!/^[A-Z]{6}$/.test(swiftCode.substring(0, 6))) {
+      alert("❌ First 6 characters of SWIFT code must be letters A-Z only\n\nExample: 'FIRNZA' (bank + country code)");
+      return;
+    }
+    
+    // Check last 3-5 characters are alphanumeric
+    const lastPart = swiftCode.substring(6);
+    if (!/^[A-Z0-9]{3,5}$/.test(lastPart)) {
+      alert(`❌ Last ${lastPart.length} characters must be 3-5 letters or numbers\n\nExample: 'JJX' (3 chars) or 'JJXXX' (5 chars)`);
       return;
     }
 
@@ -64,6 +128,7 @@ function Payment() {
       setCurrency("USD");
       setPayeeAccountNumber("");
       setSwiftCode("");
+      setSwiftError("");
     } catch (error: any) {
       alert(error?.response?.data?.message || "Payment failed");
     }
@@ -116,18 +181,22 @@ function Payment() {
             required
           />
 
-          <label>SWIFT Code (8 or 11 characters)</label>
+          <label>SWIFT/BIC Code (9-11 characters)</label>
           <input
             type="text"
-            placeholder="Example: FIRNZAJJ or FIRNZAJJXXX"
+            placeholder="Example: FIRNZAJJX (9 chars) or FIRNZAJJXXX (11 chars)"
             value={swiftCode}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setSwiftCode(e.target.value.toUpperCase())
-            }
+            onChange={handleSwiftCodeChange}
             required
           />
+          {swiftError && (
+            <div className="error-message" style={{color: swiftError.includes("✅") ? "green" : "red", fontSize: "12px", marginTop: "-10px", marginBottom: "10px"}}>
+              {swiftError}
+            </div>
+          )}
+          
           <button type="submit">Pay Now</button>
-          <button onClick={pageBack}>Back</button>
+          <button type="button" onClick={pageBack}>Back</button>
         </form>
         
       </div>

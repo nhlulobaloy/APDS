@@ -179,11 +179,12 @@ app.post('/payment', verifyToken, async (req, res) => {
                 message: "All payment fields are required"
             });
         }
-
+        //get the userId
+        const user_id = req.userId;
         const sql = `
             INSERT INTO transactions
-            (payment_amount, currency, provider, payee_account_number, swift_code)
-            VALUES (?, ?, ?, ?, ?)
+            (payment_amount, currency, provider, payee_account_number, swift_code, user_id)
+            VALUES (?, ?, ?, ?, ?, ?)
         `;
 
         await pool.query(sql, [
@@ -191,7 +192,8 @@ app.post('/payment', verifyToken, async (req, res) => {
             currency,
             provider,
             payeeAccountNumber,
-            swiftCode
+            swiftCode,
+            user_id
         ]);
 
         res.status(200).json({

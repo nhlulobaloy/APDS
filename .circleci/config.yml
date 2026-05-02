@@ -7,7 +7,18 @@ jobs:
 
     steps:
       - checkout
-      - run: echo "CircleCI is working"
+
+      - run:
+          name: Install dependencies
+          command: npm install
+
+      - run:
+          name: Run tests (basic check)
+          command: echo "Project running"
+
+      - run:
+          name: SonarQube scan (dummy step)
+          command: echo "SonarQube will run here"
 
 workflows:
   build:

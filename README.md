@@ -174,6 +174,7 @@ ADD CONSTRAINT fk_transactions_users
 FOREIGN KEY (user_id) REFERENCES users(id);
 
 ```
+TESTING THE SONAR KEY
 
 You can confirm the table structure with:
 

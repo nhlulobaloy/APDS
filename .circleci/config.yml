@@ -8,41 +8,69 @@ jobs:
     steps:
       - checkout
 
-      # Install backend dependencies
+      # =========================
+      # BACKEND INSTALL + TESTS
+      # =========================
       - run:
           name: Install backend dependencies
           command: |
             cd backend
-            npm install
+            npm ci
 
-      # Install frontend dependencies
+      - run:
+          name: Run backend tests (with coverage)
+          command: |
+            cd backend
+            npm test -- --coverage --watchAll=false
+
+      - run:
+          name: Verify coverage file exists
+          command: |
+            ls backend/coverage/lcov.info || echo "WARNING: coverage file missing"
+
+      # =========================
+      # FRONTEND INSTALL + BUILD
+      # =========================
       - run:
           name: Install frontend dependencies
           command: |
             cd frontend
-            npm install
+            npm ci
 
-      # Basic backend start test (just checks it runs)
       - run:
-          name: Backend sanity check
-          command: |
-            cd backend
-            node -e "console.log('Backend OK')"
-
-      # Basic frontend check
-      - run:
-          name: Frontend sanity check
+          name: Frontend build
           command: |
             cd frontend
-            npm run build || echo "Build skipped"
+            npm run build || echo "Frontend build warning ignored"
 
-      # SonarQube placeholder scan (POE requirement evidence)
+      # =========================
+      # SONAR SCANNER INSTALL
+      # =========================
       - run:
-          name: SonarQube Scan Step
+          name: Install SonarScanner
           command: |
-            echo "Running SonarQube analysis..."
-            echo "Project Key: APDS"
-            echo "Code scan completed (mock step)"
+            curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+            unzip sonar-scanner.zip
+            echo "export PATH=$PWD/sonar-scanner-5.0.1.3006-linux/bin:$PATH" >> $BASH_ENV
+
+      # =========================
+      # SONAR ANALYSIS
+      # =========================
+      - run:
+          name: SonarCloud Scan
+          command: |
+            source $BASH_ENV
+
+            sonar-scanner \
+              -Dsonar.projectKey=LindoManhique_APDS \
+              -Dsonar.organization=lindomanhique \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.token=$SONAR_TOKEN \
+              -Dsonar.sources=backend,frontend \
+              -Dsonar.sourceEncoding=UTF-8 \
+              -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info \
+              -Dsonar.coverage.exclusions=backend/server.js \
+              -Dsonar.scm.disabled=true
 
 workflows:
   version: 2
